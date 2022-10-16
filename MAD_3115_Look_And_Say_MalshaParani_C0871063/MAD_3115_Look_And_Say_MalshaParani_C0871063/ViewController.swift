@@ -12,7 +12,9 @@ class ViewController: UIViewController {
     @IBOutlet weak var actualNumberTextField: UITextField!
     
     var numberInt : Int = 0
-    var actualNumber : String = ""
+    var iterationCount : Int = 0
+    var actualNumber : Int = 0
+    var nextcount : Int = 1
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,7 +23,7 @@ class ViewController: UIViewController {
 
     @IBAction func calculateNumber() {
         numberInt = Int(actualNumberTextField.text ?? "0") ?? 0
-        if numberInt <= 0 {
+        if numberInt == 0 {
             showAlert(title: "Error", actionTitle: "OK", message: "Please enter a number greater than 0", preferredStyle: .alert)
         }else{
             look_and_say(number: numberInt)
@@ -36,7 +38,9 @@ class ViewController: UIViewController {
         present(alert, animated: true){
             self.actualNumberTextField.text = ""
             self.numberInt = 0
-            self.actualNumber = ""
+            self.actualNumber = 0
+            self.iterationCount = 0
+            self.nextcount = 0
         }
     }
     
@@ -44,40 +48,74 @@ class ViewController: UIViewController {
         self.view.endEditing(true)
     }
     
-    private func separateDigitleft(number:Int)->Int{
+    private func separate_digit_left(number:Int)->Int{
         var numberArray = number.digits
         let removedNumber = numberArray.removeFirst()
-        
         var numberString = ""
+        
         for x in numberArray {
-            numberString += String(x)
+          numberString += String(x)
         }
         numberInt = Int(numberString) ?? 0
-        
-        return removedNumber;
+        if numberArray.count > 0 {
+            iterationCount = numberArray[0]
+            return removedNumber;
+        }else{
+            iterationCount = 0
+            return 0;
+        }
     }
     
     private func look_and_say(number:Int){
         if number == 0 {
             showAlert(title: "Actual Number", actionTitle: "OK", message: "You actual number is \(actualNumber)", preferredStyle: .alert)
+            actualNumber = 0
+            numberInt = 0
         }else{
-            var x = separateDigitleft(number: number)
-            say_digit(number: x)
+            let removerdNumber =  separate_digit_left(number: number)
+            if removerdNumber != 0 {
+                actualNumber = removerdNumber
+            }
+            if iterationCount > 0 {
+                for _ in 1...iterationCount {
+                    say_digit(number: actualNumber)
+                }
+            }
+            nextcount = 0
             look_and_say(number: numberInt)
         }
-        
     }
-    
-    private func add_digit_right(number:Int){
-        actualNumber += String(number)
+
+    private func add_digit_right(numberx:Int, numberCount : Int){
+        let displayNumber = String(numberCount) + String(numberx)
+        if actualNumber > 0 {
+            let y = String(actualNumber) + displayNumber
+            actualNumber = Int(y) ?? 0
+        }else{
+            actualNumber = Int(displayNumber) ?? 0
+        }
+        nextcount = 1
     }
     
     private func say_digit(number:Int){
-        var convertedNumber = 0
-        convertedNumber = number - 1
-        add_digit_right(number: convertedNumber)
+        let numberArray = number.digits
+        var index = 0
+        actualNumber = 0
+        for x in numberArray {
+            var nextIndex = index + 1
+            nextIndex = numberArray.indices.contains(nextIndex) ? nextIndex : 0
+            if nextIndex != 0 {
+                if x != numberArray[nextIndex] {
+                    add_digit_right(numberx:x, numberCount :nextcount)
+                }else{
+                    nextcount += 1
+                }
+                index += 1
+            }else{
+                add_digit_right(numberx:x, numberCount :nextcount)
+            }
+        }
     }
-    
 }
 
 extension BinaryInteger {
