@@ -23,7 +23,7 @@ class ViewController: UIViewController {
 
     @IBAction func calculateNumber() {
         numberInt = Int(actualNumberTextField.text ?? "0") ?? 0
-        if numberInt == 0 {
+        if numberInt <= 0 {
             showAlert(title: "Error", actionTitle: "OK", message: "Please enter a number greater than 0", preferredStyle: .alert)
         }else{
             look_and_say(number: numberInt)
@@ -53,8 +53,8 @@ class ViewController: UIViewController {
         let removedNumber = numberArray.removeFirst()
         var numberString = ""
         
-        for x in numberArray {
-          numberString += String(x)
+        for selectedNumber in numberArray {
+          numberString += String(selectedNumber)
         }
         numberInt = Int(numberString) ?? 0
         if numberArray.count > 0 {
@@ -86,11 +86,11 @@ class ViewController: UIViewController {
         }
     }
 
-    private func add_digit_right(numberx:Int, numberCount : Int){
-        let displayNumber = String(numberCount) + String(numberx)
+    private func add_digit_right(numberAdd:Int, numberCount : Int){
+        let displayNumber = String(numberCount) + String(numberAdd)
         if actualNumber > 0 {
-            let y = String(actualNumber) + displayNumber
-            actualNumber = Int(y) ?? 0
+            let combinedNumber = String(actualNumber) + displayNumber
+            actualNumber = Int(combinedNumber) ?? 0
         }else{
             actualNumber = Int(displayNumber) ?? 0
         }
@@ -101,18 +101,18 @@ class ViewController: UIViewController {
         let numberArray = number.digits
         var index = 0
         actualNumber = 0
-        for x in numberArray {
+        for selectedNumber in numberArray {
             var nextIndex = index + 1
             nextIndex = numberArray.indices.contains(nextIndex) ? nextIndex : 0
             if nextIndex != 0 {
-                if x != numberArray[nextIndex] {
-                    add_digit_right(numberx:x, numberCount :nextcount)
+                if selectedNumber != numberArray[nextIndex] {
+                    add_digit_right(numberAdd:selectedNumber, numberCount :nextcount)
                 }else{
                     nextcount += 1
                 }
                 index += 1
             }else{
-                add_digit_right(numberx:x, numberCount :nextcount)
+                add_digit_right(numberAdd:selectedNumber, numberCount :nextcount)
             }
         }
     }
